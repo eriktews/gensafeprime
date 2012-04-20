@@ -30,7 +30,7 @@ static PyMethodDef GenPrime_Methods[] = {
 };
 
 PyMODINIT_FUNC
-initgenprime(void)
+initgensafeprime(void)
 {
     (void) Py_InitModule("gensafeprime", GenPrime_Methods);
 }

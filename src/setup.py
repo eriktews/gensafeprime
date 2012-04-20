@@ -6,7 +6,7 @@ gensafeprime = Extension('gensafeprime',
 
 setup (
 	name = 'gensafeprime', 
-	packages = ["gensafeprime"],
+	# packages = ["genprime"],
 	version = '1.0', 
 	description = 'Generate safe primes using OpenSSL (a prime p = 2*q+1, and q is prime too)', 
 	author = "Erik Tews",
