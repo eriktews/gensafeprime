@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 
 gensafeprime = Extension('gensafeprime', 
-	sources = ['primemodule.c'], 
+	sources = ['src/primemodule.c'], 
 	libraries = ['ssl'])
 
 setup (
