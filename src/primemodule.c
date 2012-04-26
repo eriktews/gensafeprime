@@ -5,7 +5,7 @@
 static PyObject * gensafeprime_generate(PyObject *self, PyObject *args) {
 	PyObject * result; // Return value
 	int bitlength; // Desired bitlength of prime
-	char * r; // temporal representation as string
+	char * r; // temporary representation as string
 	BIGNUM * n; // OpenSSL bignum object holding the prime
 
 	if (!PyArg_ParseTuple(args, "i", &bitlength)) {
