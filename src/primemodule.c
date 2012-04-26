@@ -39,7 +39,7 @@ static PyObject * gensafeprime_generate(PyObject *self, PyObject *args) {
 
 // There is only one method in this module
 static PyMethodDef GenPrime_Methods[] = {
-  {"generate", gensafeprime_generate, METH_VARARGS, "Generate a safe prime for a given bitlength."},
+  {"generate", gensafeprime_generate, METH_VARARGS, "generate(n)\n\nGenerate a safe prime of bitlength 'n'."},
   {NULL, NULL, 0, NULL}
 };
 
