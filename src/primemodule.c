@@ -1,4 +1,5 @@
 #include <Python.h>
+#include <openssl/conf.h>
 #include <openssl/bn.h>
 
 // Generate a safe prime using OpenSSL
