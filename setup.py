@@ -23,4 +23,4 @@ setup (
 		'Operating System :: Microsoft :: Windows',
 		'Operating System :: Unix',
 		'Intended Audience :: Developers'],
-	ext_modules = [Extension('gensafeprime',sources = ['src/primemodule.c'],libraries = ['ssl'])])
+	ext_modules = [Extension('gensafeprime',sources = ['src/primemodule.c'],libraries = ['ssl','crypto'])])
