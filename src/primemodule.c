@@ -1,6 +1,10 @@
 #include <Python.h>
 #include <openssl/conf.h>
 #include <openssl/bn.h>
+#include <openssl/rand.h>
+
+// By default, use 32 BYTE of randomness
+#define RAND_LEN 32
 
 // Generate a safe prime using OpenSSL
 static PyObject * gensafeprime_generate(PyObject *self, PyObject *args) {
@@ -47,5 +51,73 @@ static PyMethodDef GenPrime_Methods[] = {
 PyMODINIT_FUNC
 initgensafeprime(void)
 {
-    (void) Py_InitModule("gensafeprime", GenPrime_Methods);
+    PyObject *modname, *mod, *mdict, *func, *args, *rslt;
+    char * rnd;
+    // int i;
+
+    // first, standard initialization
+    if (!Py_InitModule("gensafeprime", GenPrime_Methods)) {
+        PyErr_SetString(PyExc_RuntimeError, "cannot init module");
+        return;
+    }
+
+    // seed the random number generator of OpenSSL using os.urandom(RAND_LEN)
+    // According to https://docs.python.org/2.7/library/random.html os.urandom
+    // generates secure random numbers for cryptographic applications.
+
+    // Code based on 
+    // https://www.daniweb.com/software-development/python/threads/31682/calling-python-function-from-cc-
+    // but has been heavily modified.
+
+    // Import os and get a reference to os.urandom
+    modname = PyString_FromString("os");
+    mod = PyImport_Import(modname);
+    if (mod) {
+        mdict = PyModule_GetDict(mod);
+        func = PyDict_GetItemString(mdict, "urandom");
+        if (func) {
+            // Call urandom(RAND_LEN)
+            if (PyCallable_Check(func)) {
+                args = Py_BuildValue("(i)", RAND_LEN);
+                rslt = PyObject_CallObject(func, args);
+                Py_XDECREF(args);
+                // Check the result, when the call failed, rslt will be NULL
+		if (rslt) {
+                    // Get random bytes as char* representation
+                    rnd = PyString_AsString(rslt);
+                    if (rnd) {
+                        // Check that really RAND_LEN bytes have been returned
+                        if (PyString_Size(rslt) == RAND_LEN) {
+                            // rnd should now contain RAND_LEN securely random characters
+                            // terminated by a 0 byte, pass it to OpenSSL RAND_seed
+                            RAND_seed(rnd, RAND_LEN);
+                        
+                            // DEBUG code, uncomment to see the seed
+                            //printf("prng has been seeded with");
+                            //for (i = 0; i < RAND_LEN; i++) {
+                            //    printf(" %02x", 0xff & rnd[i]);
+                            //}
+                            //printf("\n");
+                        } else {
+                            PyErr_SetString(PyExc_RuntimeError, "wrong length of random data");
+                        }
+                    } else {
+                        PyErr_SetString(PyExc_RuntimeError, "parsing result failed, rnd == NULL");
+                    }
+                    Py_XDECREF(rslt);
+                } else {
+                    PyErr_SetString(PyExc_RuntimeError, "call to urandom returned NULL pointer");
+		}
+            } else {
+                PyErr_SetString(PyExc_RuntimeError, "urandom not callable");
+            }
+        } else {
+            PyErr_SetString(PyExc_RuntimeError, "could not get reference to os.urandom");
+        }
+        Py_XDECREF(mod);
+    } else {
+        PyErr_SetString(PyExc_RuntimeError, "could not import os");
+    }
+    Py_XDECREF(modname);
+       
 }
