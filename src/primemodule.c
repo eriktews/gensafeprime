@@ -59,7 +59,7 @@ static struct PyModuleDef gensafeprimemod =
 {
 	PyModuleDef_HEAD_INIT,
 	"gensafeprime", /* name of module */
-	"",          /* module documentation, may be NULL */
+	"This module generates safe prime numbers using the OpenSSL library. A number p is a safe prime number, if p is a prime number, and p = 2*q+1, and q is a prime number too. These numbers are sometimes used in cryptography.",          /* module documentation, may be NULL */
 	-1,          /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
 	GenPrime_Methods
 };
