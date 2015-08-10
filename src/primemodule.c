@@ -45,21 +45,31 @@ static PyObject * gensafeprime_generate(PyObject *self, PyObject *args) {
 // There is only one method in this module
 static PyMethodDef GenPrime_Methods[] = {
   {"generate", gensafeprime_generate, METH_VARARGS, "generate(n)\n\nGenerate a safe prime of bitlength 'n'."},
-  {NULL, NULL, 0, NULL}
+  {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
-PyMODINIT_FUNC
-initgensafeprime(void)
+static struct PyModuleDef gensafeprimemod =
+{
+    PyModuleDef_HEAD_INIT,
+    "gensafeprime", /* name of module */
+    "",          /* module documentation, may be NULL */
+    -1,          /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    GenPrime_Methods
+};
+
+
+PyMODINIT_FUNC PyInit_gensafeprime(void)
 {
     PyObject *modname, *mod, *mdict, *func, *args, *rslt;
     char * rnd;
     // int i;
 
     // first, standard initialization
-    if (!Py_InitModule("gensafeprime", GenPrime_Methods)) {
-        PyErr_SetString(PyExc_RuntimeError, "cannot init module");
-        return;
-    }
+    // if (!Py_InitModule("gensafeprime", GenPrime_Methods)) {
+    //     PyErr_SetString(PyExc_RuntimeError, "cannot init module");
+    //     return -1;
+    // }
+	return PyModule_Create(&gensafeprimemod);
 
     // seed the random number generator of OpenSSL using os.urandom(RAND_LEN)
     // According to https://docs.python.org/2.7/library/random.html os.urandom
@@ -70,7 +80,8 @@ initgensafeprime(void)
     // but has been heavily modified.
 
     // Import os and get a reference to os.urandom
-    modname = PyString_FromString("os");
+    // modname = PyString_FromString("os");
+    modname = PyBytes_FromString("os");
     mod = PyImport_Import(modname);
     if (mod) {
         mdict = PyModule_GetDict(mod);
@@ -84,10 +95,12 @@ initgensafeprime(void)
                 // Check the result, when the call failed, rslt will be NULL
 		if (rslt) {
                     // Get random bytes as char* representation
-                    rnd = PyString_AsString(rslt);
+                    // rnd = PyString_AsString(rslt);
+                    rnd = PyBytes_AsString(rslt);
                     if (rnd) {
                         // Check that really RAND_LEN bytes have been returned
-                        if (PyString_Size(rslt) == RAND_LEN) {
+                        // if (PyString_Size(rslt) == RAND_LEN) {
+                        if (PyBytes_Size(rslt) == RAND_LEN) {
                             // rnd should now contain RAND_LEN securely random characters
                             // terminated by a 0 byte, pass it to OpenSSL RAND_seed
                             RAND_seed(rnd, RAND_LEN);
