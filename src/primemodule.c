@@ -26,6 +26,11 @@ static PyObject * gensafeprime_generate(PyObject *self, PyObject *args) {
 
 	// Generate the prime
 	n = BN_new();
+	if (n == NULL) {
+		PyErr_SetString(PyExc_RuntimeError, "call to BN_new failed");
+		return NULL;
+	}
+
 	if (BN_generate_prime_ex(n, bitlength, 1, NULL, NULL, NULL) != 1) {
 		BN_free(n);
 		PyErr_SetString(PyExc_RuntimeError, "call to BN_generate_prime_ex failed");
