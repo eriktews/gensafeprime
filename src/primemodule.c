@@ -39,6 +39,11 @@ static PyObject * gensafeprime_generate(PyObject *self, PyObject *args) {
 
 	// Convert it to a hex string
 	r = BN_bn2hex(n);
+	if (r == NULL) {
+		BN_clear_free(n);
+		PyErr_SetString(PyExc_RuntimeError, "call to BN_bn2hex failed");
+		return NULL;
+	}
 
 	// Convert it to a python integer
 	result = PyLong_FromString(r, NULL, 16);
@@ -96,7 +101,7 @@ PyMODINIT_FUNC initgensafeprime(void)
 	// According to https://docs.python.org/2.7/library/random.html os.urandom
 	// generates secure random numbers for cryptographic applications.
 
-	// Code based on 
+	// Code based on
 	// https://www.daniweb.com/software-development/python/threads/31682/calling-python-function-from-cc-
 	// but has been heavily modified.
 
