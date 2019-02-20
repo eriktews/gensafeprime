@@ -2,7 +2,7 @@ from distutils.core import setup, Extension
 
 setup (
 	name = 'gensafeprime', 
-	version = '1.5', 
+	version = '1.6', 
 	description = 'Generate safe primes using OpenSSL (a prime p = 2*q+1, and q is prime too)', 
 	long_description = open('README.txt').read(),
 	author = 'Erik Tews',
